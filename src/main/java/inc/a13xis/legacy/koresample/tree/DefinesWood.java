@@ -6,11 +6,11 @@ public interface DefinesWood
 {
     void assignWoodBlock(WoodBlock block);
 
-    void assignWoodSubBlockIndex(int index);
+    void assignWoodSubBlockVariant(Enum index);
 
     WoodBlock woodBlock();
 
-    int woodSubBlockIndex();
+    Enum woodSubBlockVariant();
 
     String speciesName();
 }

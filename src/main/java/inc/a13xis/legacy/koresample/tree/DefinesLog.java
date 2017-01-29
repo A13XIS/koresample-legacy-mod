@@ -7,15 +7,15 @@ public interface DefinesLog
 {
     void assignLogBlock(LogBlock block);
 
-    void assignLogSubBlockIndex(int index);
+    void assignLogSubBlockVariant(Enum index);
 
     Block logBlock();
 
-    int logSubBlockIndex();
+    Enum logSubBlockVariant();
 
     String speciesName();
 
     Block woodBlock();
 
-    int woodSubBlockIndex();
+    Enum woodSubBlockVariant();
 }

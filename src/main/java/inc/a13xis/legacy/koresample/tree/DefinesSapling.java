@@ -8,11 +8,11 @@ public interface DefinesSapling
 {
     void assignSaplingBlock(SaplingBlock block);
 
-    void assignSaplingSubBlockIndex(int index);
+    void assignSaplingSubBlockVariant(Enum index);;
 
     SaplingBlock saplingBlock();
 
-    int saplingSubBlockIndex();
+    Enum saplingSubBlockVariant();
 
     String speciesName();
 

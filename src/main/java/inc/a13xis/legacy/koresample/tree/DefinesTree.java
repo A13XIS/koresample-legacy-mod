@@ -10,15 +10,15 @@ public interface DefinesTree
 {
     LeavesBlock leavesBlock();
 
-    int leavesSubBlockIndex();
+    Enum leavesSubBlockVariant();
 
     LogBlock logBlock();
 
-    int logSubBlockIndex();
+    Enum logSubBlockVariant();
 
     SaplingBlock saplingBlock();
 
-    int saplingSubBlockIndex();
+    Enum saplingSubBlockVariant();
 
     WorldGenerator saplingTreeGenerator();
 

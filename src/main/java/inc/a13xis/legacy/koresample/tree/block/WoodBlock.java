@@ -5,29 +5,30 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import inc.a13xis.legacy.koresample.tree.DefinesWood;
-import net.minecraft.block.BlockPlanks;
+import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.model.ModelResourceLocation;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public abstract class WoodBlock extends BlockPlanks
+public abstract class WoodBlock extends Block
 {
-    public static final int CAPACITY = Integer.MAX_VALUE;
+    public static final int CAPACITY = 16;
     private final ImmutableList<DefinesWood> subBlocks;
 
     protected WoodBlock(Collection<? extends DefinesWood> subBlocks)
     {
+        super(Material.wood);
         Preconditions.checkArgument(!subBlocks.isEmpty());
         Preconditions.checkArgument(subBlocks.size() <= CAPACITY);
         this.subBlocks = ImmutableList.copyOf(subBlocks);
-        this.setUnlocalizedName("wood");
+        this.setUnlocalizedName("planks");
     }
 
     @SuppressWarnings("WeakerAccess")
@@ -51,8 +52,6 @@ public abstract class WoodBlock extends BlockPlanks
         return String.format("tile.%s%s", resourcePrefix(), getUnwrappedUnlocalizedName(super.getUnlocalizedName()));
     }
 
-    @SuppressWarnings("unchecked")
-    @SideOnly(Side.CLIENT)
     @Override
     public final void getSubBlocks(Item item, CreativeTabs unused, List subblocks)
     {

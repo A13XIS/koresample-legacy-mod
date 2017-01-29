@@ -10,17 +10,17 @@ public interface DefinesSlab
 
     void assignSingleSlabBlock(SlabBlock block);
 
-    void assignSlabSubBlockIndex(int index);
+    void assignSlabSubBlockVariant(Enum index);
 
     SlabBlock doubleSlabBlock();
 
     SlabBlock singleSlabBlock();
 
-    int slabSubBlockIndex();
+    Enum slabSubBlockVariant();
 
     Block slabModelBlock();
 
-    int slabModelSubBlockIndex();
+    Enum slabModelSubBlockVariant();
 
     String slabName();
 }

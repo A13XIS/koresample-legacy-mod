@@ -11,7 +11,7 @@ public interface DefinesStairs
 
     Block stairsModelBlock();
 
-    int stairsModelSubBlockIndex();
+    Enum stairsModelSubBlockVariant();
 
     String stairsName();
 }

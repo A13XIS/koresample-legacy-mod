@@ -20,7 +20,7 @@ import static com.google.common.base.Preconditions.*;
 
 public abstract class LogBlock extends BlockLog
 {
-    public static final int CAPACITY = Integer.MAX_VALUE;
+    public static final int CAPACITY = 4;
     private final ImmutableList<DefinesLog> subBlocks;
 
     protected LogBlock(Collection<? extends DefinesLog> subBlocks)
@@ -68,7 +68,7 @@ public abstract class LogBlock extends BlockLog
 
         for (int i = 0; i < subBlocks.size(); i++)
         {
-            final String iconName = String.format("log_%s",  subBlocks.get(i).speciesName().replace('.', '_'));
+            final String iconName = String.format("log_%s",  subBlocks.get(i).speciesName().toLowerCase().replace('.', '_'));
             Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(Item.getItemFromBlock(this),i,new ModelResourceLocation(resourcePrefix()+iconName,"inventory"));
         }
     }

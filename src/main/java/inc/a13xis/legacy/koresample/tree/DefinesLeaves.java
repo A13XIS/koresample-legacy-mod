@@ -6,11 +6,11 @@ public interface DefinesLeaves extends ProvidesColor
 {
     void assignLeavesBlock(LeavesBlock block);
 
-    void assignLeavesSubBlockIndex(int index);
+    void assignLeavesSubBlockVariant(Enum variant);
 
     LeavesBlock leavesBlock();
 
-    int leavesSubBlockIndex();
+    Enum leavesSubBlockVariant();
 
     DefinesSapling saplingDefinition();
 

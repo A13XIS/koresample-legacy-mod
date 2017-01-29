@@ -20,4 +20,6 @@ public interface TreeBlockFactory
     StairsBlock createStairsBlock(DefinesStairs definition);
 
     WoodBlock createWoodBlock(Iterable<DefinesWood> subBlocks);
+
+    void resetTypeBit();
 }

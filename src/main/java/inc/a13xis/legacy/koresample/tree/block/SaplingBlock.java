@@ -4,30 +4,36 @@ import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import inc.a13xis.legacy.koresample.tree.DefinesSapling;
+import net.minecraft.block.BlockBush;
+import net.minecraft.block.IGrowable;
+import net.minecraft.block.properties.PropertyInteger;
+import net.minecraft.block.state.BlockState;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.model.ModelResourceLocation;
-import net.minecraft.util.BlockPos;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraft.block.BlockSapling;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.WorldGenerator;
 import net.minecraftforge.event.terraingen.TerrainGen;
-import scala.Int;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
 
-import static com.google.common.base.Preconditions.*;
+import static com.google.common.base.Preconditions.checkArgument;
 
 @SuppressWarnings("AbstractClassNeverImplemented")
-public abstract class SaplingBlock extends BlockSapling
+public abstract class SaplingBlock extends BlockBush implements IGrowable
 {
-    public static final int CAPACITY = Integer.MAX_VALUE;
+    public static final int CAPACITY = 8;
     private static final int METADATA_MASK = CAPACITY - 1;
+    public static final PropertyInteger STAGE = PropertyInteger.create("stage", 0, 1);
     private final ImmutableList<DefinesSapling> subBlocks;
 
     protected SaplingBlock(Collection<? extends DefinesSapling> subBlocks)
@@ -38,6 +44,7 @@ public abstract class SaplingBlock extends BlockSapling
 
         setUnlocalizedName("sapling");
     }
+
 
     @SuppressWarnings("WeakerAccess")
     protected static String getUnwrappedUnlocalizedName(String unlocalizedName)
@@ -56,21 +63,14 @@ public abstract class SaplingBlock extends BlockSapling
         return ImmutableList.copyOf(names);
     }
 
-    @Override
     public void generateTree(World world, BlockPos pos, IBlockState state, Random rand)
     {
         if (!TerrainGen.saplingGrowTree(world, rand, pos)) return;
 
-        final int metadata = mask(this.getMetaFromState(state));
+        final int metadata = this.getMetaFromState(state.withProperty(STAGE,0));
         final WorldGenerator treeGen = subBlocks.get(metadata).saplingTreeGenerator();
         world.setBlockToAir(pos);
         if (!treeGen.generate(world, rand, pos)) world.setBlockState(pos,this.getStateFromMeta(metadata),4);
-    }
-
-    @Override
-    public final int damageDropped(IBlockState state)
-    {
-        return mask(this.getMetaFromState(state));
     }
 
     @SuppressWarnings("unchecked")
@@ -88,7 +88,7 @@ public abstract class SaplingBlock extends BlockSapling
 
         for (int i = 0; i < subBlocks.size(); i++)
         {
-            final String iconName = String.format("sapling_%s",  subBlocks.get(i).speciesName().replace('.', '_'));
+            final String iconName = String.format("sapling_%s",  subBlocks.get(i).speciesName().toLowerCase().replace('.', '_'));
             Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(Item.getItemFromBlock(this),i,new ModelResourceLocation(resourcePrefix()+iconName,"inventory"));
         }
     }
@@ -106,4 +106,72 @@ public abstract class SaplingBlock extends BlockSapling
     {
         return Objects.toStringHelper(this).add("subBlocks", subBlocks).toString();
     }
+
+    public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
+    {
+        if (!worldIn.isRemote)
+        {
+            super.updateTick(worldIn, pos, state, rand);
+
+            if (worldIn.getLightFromNeighbors(pos.up()) >= 9 && rand.nextInt(7) == 0)
+            {
+                this.grow(worldIn, pos, state, rand);
+            }
+        }
+    }
+
+    public void grow(World worldIn, BlockPos pos, IBlockState state, Random rand)
+    {
+        if ((Integer) state.getValue(STAGE) == 0)
+        {
+            worldIn.setBlockState(pos, state.cycleProperty(STAGE), 4);
+        }
+        else
+        {
+            this.generateTree(worldIn, pos, state, rand);
+        }
+    }
+
+     /**
+     * Check whether the given BlockPos has a Sapling of the given type
+     */
+    public abstract boolean isTypeAt(World worldIn, BlockPos pos, Enum type);
+
+    /**
+     * Get the damage value that this Block should drop
+     */
+    public abstract int damageDropped(IBlockState state);
+
+    /**
+     * Whether this IGrowable can grow
+     */
+    public boolean canGrow(World worldIn, BlockPos pos, IBlockState state, boolean isClient)
+    {
+        return true;
+    }
+
+    public boolean canUseBonemeal(World worldIn, Random rand, BlockPos pos, IBlockState state)
+    {
+        return (double)worldIn.rand.nextFloat() < 0.45D;
+    }
+
+    public void grow(World worldIn, Random rand, BlockPos pos, IBlockState state)
+    {
+        this.grow(worldIn, pos, state, rand);
+    }
+
+    /**
+     * Convert the given metadata into a BlockState for this Block
+     */
+    public abstract IBlockState getStateFromMeta(int meta);
+
+    /**
+     * Convert the BlockState into the correct metadata value
+     */
+    public abstract int getMetaFromState(IBlockState state);
+
+    protected abstract BlockState createBlockState();
+
+
+    
 }
