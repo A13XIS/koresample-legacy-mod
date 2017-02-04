@@ -3,6 +3,7 @@ package inc.a13xis.legacy.koresample.tree.block;
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import inc.a13xis.legacy.koresample.tree.DefinesLog;
 import inc.a13xis.legacy.koresample.tree.DefinesSapling;
 import net.minecraft.block.BlockBush;
 import net.minecraft.block.IGrowable;
@@ -17,7 +18,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.WorldGenerator;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.event.terraingen.TerrainGen;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -83,13 +86,14 @@ public abstract class SaplingBlock extends BlockBush implements IGrowable
             subBlocks.add(new ItemStack(item, 1, i));
     }
 
-    public final void registerBlockModels()
+    public final void registerBlockModels(int i)
     {
-
-        for (int i = 0; i < subBlocks.size(); i++)
+        String[] pair = getUnwrappedUnlocalizedName(getUnlocalizedName()).split(":");
+        Item itemWoodBlock = GameRegistry.findItem(pair[0],pair[1]+i);
+        for (DefinesSapling define : subBlocks())
         {
-            final String iconName = String.format("sapling_%s",  subBlocks.get(i).speciesName().toLowerCase().replace('.', '_'));
-            Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(Item.getItemFromBlock(this),i,new ModelResourceLocation(resourcePrefix()+iconName,"inventory"));
+            ModelResourceLocation typeLocation = new ModelResourceLocation(getUnwrappedUnlocalizedName(getUnlocalizedName())+"_"+define.saplingSubBlockVariant().name().toLowerCase());
+            ModelLoader.setCustomModelResourceLocation(itemWoodBlock, define.saplingSubBlockVariant().ordinal(), typeLocation);
         }
     }
 

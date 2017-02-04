@@ -12,6 +12,8 @@ import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -48,7 +50,7 @@ public abstract class WoodBlock extends Block
     }
 
     @Override
-    public final String getUnlocalizedName() {
+    public String getUnlocalizedName() {
         return String.format("tile.%s%s", resourcePrefix(), getUnwrappedUnlocalizedName(super.getUnlocalizedName()));
     }
 
@@ -60,13 +62,13 @@ public abstract class WoodBlock extends Block
             subblocks.add(new ItemStack(item, 1, i));
     }
 
-    public final void registerBlockModels()
-    {
-
-        for (int i = 0; i < subBlocks.size(); i++)
+    public final void registerBlockModels(int i) {
+        String[] pair = getUnwrappedUnlocalizedName(getUnlocalizedName()).split(":");
+        Item itemWoodBlock = GameRegistry.findItem(pair[0],pair[1]+i);
+        for (DefinesWood define : subBlocks())
         {
-            final String iconName = String.format("planks_%s",  subBlocks.get(i).speciesName().replace('.', '_'));
-            Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(Item.getItemFromBlock(this),i,new ModelResourceLocation(resourcePrefix()+iconName,"inventory"));
+            ModelResourceLocation typeLocation = new ModelResourceLocation(getUnwrappedUnlocalizedName(getUnlocalizedName())+"_"+define.woodSubBlockVariant().name().toLowerCase());
+            ModelLoader.setCustomModelResourceLocation(itemWoodBlock, define.woodSubBlockVariant().ordinal(), typeLocation);
         }
     }
 

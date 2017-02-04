@@ -3,9 +3,12 @@ package inc.a13xis.legacy.koresample.tree.block;
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import inc.a13xis.legacy.koresample.tree.DefinesLeaves;
 import inc.a13xis.legacy.koresample.tree.DefinesLog;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraft.block.BlockLog;
@@ -63,13 +66,14 @@ public abstract class LogBlock extends BlockLog
             subblocks.add(new ItemStack(item, 1, i));
     }
 
-    public final void registerBlockModels()
+    public final void registerBlockModels(int i)
     {
-
-        for (int i = 0; i < subBlocks.size(); i++)
+        String[] pair = getUnwrappedUnlocalizedName(getUnlocalizedName()).split(":");
+        Item itemWoodBlock = GameRegistry.findItem(pair[0],pair[1]+i);
+        for (DefinesLog define : subBlocks())
         {
-            final String iconName = String.format("log_%s",  subBlocks.get(i).speciesName().toLowerCase().replace('.', '_'));
-            Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(Item.getItemFromBlock(this),i,new ModelResourceLocation(resourcePrefix()+iconName,"inventory"));
+            ModelResourceLocation typeLocation = new ModelResourceLocation(getUnwrappedUnlocalizedName(getUnlocalizedName())+"_"+define.logSubBlockVariant().name().toLowerCase());
+            ModelLoader.setCustomModelResourceLocation(itemWoodBlock, define.logSubBlockVariant().ordinal(), typeLocation);
         }
     }
 

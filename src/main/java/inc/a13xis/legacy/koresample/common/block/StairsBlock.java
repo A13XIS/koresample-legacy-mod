@@ -1,22 +1,22 @@
 package inc.a13xis.legacy.koresample.common.block;
 
 import inc.a13xis.legacy.koresample.tree.DefinesStairs;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockStairs;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.model.ModelResourceLocation;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.Item;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.world.World;
+import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 @SuppressWarnings("AbstractClassNeverImplemented")
 public abstract class StairsBlock extends BlockStairs
 {
+    Enum variant;
     protected StairsBlock(DefinesStairs model)
     {
         super(model.stairsModelBlock().getStateFromMeta(model.stairsModelSubBlockVariant().ordinal()));
+        this.variant=model.stairsModelSubBlockVariant();
+        setUnlocalizedName("stairs");
     }
 
     @Override
@@ -42,8 +42,10 @@ public abstract class StairsBlock extends BlockStairs
     protected abstract String resourcePrefix();
 
     public void registerBlockModel(int i) {
-        String iconName = getUnlocalizedName().substring(getUnlocalizedName().indexOf('.')+1);
-        iconName = iconName.substring(0,iconName.indexOf('.'))+i;
-        Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(Item.getItemFromBlock(this),0,new ModelResourceLocation(iconName,"inventory"));
+        String[] pair = getUnwrappedUnlocalizedName(getUnlocalizedName()).split(":");
+        pair[1]=pair[1].split("\\.")[0]+i;
+        Item itemStairsBlock = GameRegistry.findItem(pair[0],pair[1]);
+        ModelResourceLocation typeLocation = new ModelResourceLocation(pair[0]+":"+pair[1]);
+        ModelLoader.setCustomModelResourceLocation(itemStairsBlock, 0, typeLocation);
     }
 }

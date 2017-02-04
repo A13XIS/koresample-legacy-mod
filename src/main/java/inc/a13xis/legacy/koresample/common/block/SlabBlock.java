@@ -14,6 +14,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.IBlockAccess;
+import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -103,11 +105,14 @@ public abstract class SlabBlock extends BlockSlab
         }
     }
 
-    public final void registerBlockModels() {
-        for (int i = 0; i < subBlocks.size(); i++)
+    public final void registerBlockModels(int i) {
+        String[] pair = getUnwrappedUnlocalizedName(getUnlocalizedName()).split(":");
+        Item itemWoodBlock = GameRegistry.findItem(pair[0],"s"+pair[1]+i);
+        for (DefinesSlab define : subBlocks())
         {
-            final String iconName = String.format("slab_%s",  subBlocks.get(i).slabModelSubBlockVariant().name().toLowerCase().replace('.', '_'));
-            Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(Item.getItemFromBlock(this),i,new ModelResourceLocation(resourcePrefix()+iconName,"inventory"));
+            ModelResourceLocation typeLocation = new ModelResourceLocation(pair[0]+":"+pair[1]+"_"+define.slabSubBlockVariant().name().toLowerCase(),"inventory");
+            int test = define.slabSubBlockVariant().ordinal();
+            ModelLoader.setCustomModelResourceLocation(itemWoodBlock, define.slabSubBlockVariant().ordinal(), typeLocation);
         }
     }
 

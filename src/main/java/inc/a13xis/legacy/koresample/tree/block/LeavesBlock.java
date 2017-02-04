@@ -4,6 +4,7 @@ import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import inc.a13xis.legacy.koresample.tree.DefinesLeaves;
+import inc.a13xis.legacy.koresample.tree.DefinesWood;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLeavesBase;
 import net.minecraft.block.material.Material;
@@ -21,6 +22,8 @@ import net.minecraft.util.EnumWorldBlockLayer;
 import net.minecraft.world.ColorizerFoliage;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -127,13 +130,14 @@ public abstract class LeavesBlock extends BlockLeavesBase implements net.minecra
             subBlocks.add(new ItemStack(item, 1, i));
     }
 
-    public final void registerBlockModels()
+    public final void registerBlockModels(int i)
     {
-
-        for (int i = 0; i < subBlocks.size(); i++)
+        String[] pair = getUnwrappedUnlocalizedName(getUnlocalizedName()).split(":");
+        Item itemWoodBlock = GameRegistry.findItem(pair[0],pair[1]+i);
+        for (DefinesLeaves define : subBlocks())
         {
-            final String iconName = String.format("leaves_%s",  subBlocks.get(i).speciesName().toLowerCase().replace('.', '_'));
-            Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(Item.getItemFromBlock(this),i,new ModelResourceLocation(resourcePrefix()+iconName,"inventory"));
+            ModelResourceLocation typeLocation = new ModelResourceLocation(getUnwrappedUnlocalizedName(getUnlocalizedName())+"_"+define.leavesSubBlockVariant().name().toLowerCase());
+            ModelLoader.setCustomModelResourceLocation(itemWoodBlock, define.leavesSubBlockVariant().ordinal(), typeLocation);
         }
     }
 

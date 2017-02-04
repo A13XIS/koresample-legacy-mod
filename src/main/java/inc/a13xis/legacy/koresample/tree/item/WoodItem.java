@@ -10,4 +10,5 @@ public abstract class WoodItem extends ItemMultiTexture
     // WoodBlock in the second parameter
 
     protected WoodItem(Block block, WoodBlock log, String[] names) { super(block, log, names); }
+
 }
