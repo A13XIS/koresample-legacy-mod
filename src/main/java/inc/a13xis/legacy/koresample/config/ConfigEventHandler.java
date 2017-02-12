@@ -112,7 +112,8 @@ public final class ConfigEventHandler
     @SubscribeEvent
     public void onConfigChanged(OnConfigChangedEvent event)
     {
-        if (event.modID.equalsIgnoreCase(modID))
+        String modid = event.getModID();
+        if (modid.equalsIgnoreCase(modID))
         {
             saveConfig();
             syncConfig();
