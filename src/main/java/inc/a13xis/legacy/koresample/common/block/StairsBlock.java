@@ -1,12 +1,15 @@
 package inc.a13xis.legacy.koresample.common.block;
 
+import inc.a13xis.legacy.koresample.tree.DefinesSlab;
 import inc.a13xis.legacy.koresample.tree.DefinesStairs;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockStairs;
-import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+
+import java.rmi.registry.Registry;
 
 @SuppressWarnings("AbstractClassNeverImplemented")
 public abstract class StairsBlock extends BlockStairs
@@ -17,13 +20,6 @@ public abstract class StairsBlock extends BlockStairs
         super(model.stairsModelBlock().getStateFromMeta(model.stairsModelSubBlockVariant().ordinal()));
         this.variant=model.stairsModelSubBlockVariant();
         setUnlocalizedName("stairs");
-    }
-
-    @Override
-    public boolean getUseNeighborBrightness()
-    {
-        // Fix lighting bugs
-        return true;
     }
 
     @SuppressWarnings("WeakerAccess")
@@ -41,11 +37,11 @@ public abstract class StairsBlock extends BlockStairs
 
     protected abstract String resourcePrefix();
 
-    public void registerBlockModel(int i) {
-        String[] pair = getUnwrappedUnlocalizedName(getUnlocalizedName()).split(":");
-        pair[1]=pair[1].split("\\.")[0]+i;
-        Item itemStairsBlock = GameRegistry.findItem(pair[0],pair[1]);
-        ModelResourceLocation typeLocation = new ModelResourceLocation(pair[0]+":"+pair[1]);
-        ModelLoader.setCustomModelResourceLocation(itemStairsBlock, 0, typeLocation);
+    public void registerBlockModel()
+    {
+            ModelResourceLocation typeLocation = new ModelResourceLocation(getRegistryName(),"facing=east,half=bottom,shape=straight");
+            //ModelResourceLocation typeItemLocation = new ModelResourceLocation(getRegistryName().toString().substring(0,getRegistryName().toString().length()-1)+"_"+define.leavesSubBlockVariant().name().toLowerCase(),"inventory");
+            Item blockItem = Item.getItemFromBlock(this);
+            ModelLoader.setCustomModelResourceLocation(blockItem,variant.ordinal(),typeLocation);
     }
 }

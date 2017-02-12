@@ -5,12 +5,13 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import inc.a13xis.legacy.koresample.tree.DefinesWood;
+import inc.a13xis.legacy.koresample.tree.item.WoodItem;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -26,7 +27,7 @@ public abstract class WoodBlock extends Block
 
     protected WoodBlock(Collection<? extends DefinesWood> subBlocks)
     {
-        super(Material.wood);
+        super(Material.WOOD);
         Preconditions.checkArgument(!subBlocks.isEmpty());
         Preconditions.checkArgument(subBlocks.size() <= CAPACITY);
         this.subBlocks = ImmutableList.copyOf(subBlocks);
@@ -49,6 +50,16 @@ public abstract class WoodBlock extends Block
         return ImmutableList.copyOf(names);
     }
 
+    public void registerBlockModels() {
+        for (DefinesWood define : subBlocks())
+        {
+            ModelResourceLocation typeLocation = new ModelResourceLocation(getRegistryName(),"variant="+define.woodSubBlockVariant().name().toLowerCase());
+            Item blockItem = Item.getItemFromBlock(define.woodBlock());
+            ModelLoader.setCustomModelResourceLocation(blockItem,define.woodSubBlockVariant().ordinal(),typeLocation);
+
+        }
+    }
+
     @Override
     public String getUnlocalizedName() {
         return String.format("tile.%s%s", resourcePrefix(), getUnwrappedUnlocalizedName(super.getUnlocalizedName()));
@@ -62,21 +73,16 @@ public abstract class WoodBlock extends Block
             subblocks.add(new ItemStack(item, 1, i));
     }
 
-    public final void registerBlockModels(int i) {
-        String[] pair = getUnwrappedUnlocalizedName(getUnlocalizedName()).split(":");
-        Item itemWoodBlock = GameRegistry.findItem(pair[0],pair[1]+i);
-        for (DefinesWood define : subBlocks())
-        {
-            ModelResourceLocation typeLocation = new ModelResourceLocation(getUnwrappedUnlocalizedName(getUnlocalizedName())+"_"+define.woodSubBlockVariant().name().toLowerCase());
-            ModelLoader.setCustomModelResourceLocation(itemWoodBlock, define.woodSubBlockVariant().ordinal(), typeLocation);
-        }
-    }
-
     protected abstract String resourcePrefix();
 
     @Override
     public String toString()
     {
         return Objects.toStringHelper(this).add("subBlocks", subBlocks).toString();
+    }
+
+    public static String getRawUnlocalizedName(WoodBlock wood) {
+        String unwrapped=getUnwrappedUnlocalizedName(wood.getUnlocalizedName());
+        return unwrapped.substring(unwrapped.indexOf(":"));
     }
 }

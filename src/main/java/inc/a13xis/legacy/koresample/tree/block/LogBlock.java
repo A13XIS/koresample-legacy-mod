@@ -5,21 +5,21 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import inc.a13xis.legacy.koresample.tree.DefinesLeaves;
 import inc.a13xis.legacy.koresample.tree.DefinesLog;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.block.BlockLog;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraft.block.BlockLog;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import static com.google.common.base.Preconditions.*;
+import static com.google.common.base.Preconditions.checkArgument;
 
 public abstract class LogBlock extends BlockLog
 {
@@ -66,14 +66,14 @@ public abstract class LogBlock extends BlockLog
             subblocks.add(new ItemStack(item, 1, i));
     }
 
-    public final void registerBlockModels(int i)
+    public void registerBlockModels()
     {
-        String[] pair = getUnwrappedUnlocalizedName(getUnlocalizedName()).split(":");
-        Item itemWoodBlock = GameRegistry.findItem(pair[0],pair[1]+i);
         for (DefinesLog define : subBlocks())
         {
-            ModelResourceLocation typeLocation = new ModelResourceLocation(getUnwrappedUnlocalizedName(getUnlocalizedName())+"_"+define.logSubBlockVariant().name().toLowerCase());
-            ModelLoader.setCustomModelResourceLocation(itemWoodBlock, define.logSubBlockVariant().ordinal(), typeLocation);
+            ModelResourceLocation typeLocation = new ModelResourceLocation(getRegistryName(),"axis=y,variant="+define.logSubBlockVariant().name().toLowerCase());
+            //ModelResourceLocation typeItemLocation = new ModelResourceLocation(getRegistryName().toString().substring(0,getRegistryName().toString().length()-1)+"_"+define.leavesSubBlockVariant().name().toLowerCase(),"inventory");
+            Item blockItem = Item.getItemFromBlock(define.logBlock());
+            ModelLoader.setCustomModelResourceLocation(blockItem,define.logSubBlockVariant().ordinal(),typeLocation);
         }
     }
 

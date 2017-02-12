@@ -3,16 +3,17 @@ package inc.a13xis.legacy.koresample.common.block;
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
 import inc.a13xis.legacy.koresample.common.util.slab.TheSingleSlabRegistry;
+import inc.a13xis.legacy.koresample.tree.DefinesLog;
 import inc.a13xis.legacy.koresample.tree.DefinesSlab;
 import net.minecraft.block.BlockSlab;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -36,7 +37,7 @@ public abstract class SlabBlock extends BlockSlab
 
     protected SlabBlock(Collection<? extends DefinesSlab> subBlocks)
     {
-        super(Material.wood);
+        super(Material.WOOD);
 
         checkArgument(!subBlocks.isEmpty());
         checkArgument(subBlocks.size() <= CAPACITY);
@@ -72,13 +73,6 @@ public abstract class SlabBlock extends BlockSlab
     }
 
     @Override
-    public boolean getUseNeighborBrightness()
-    {
-        // Fix lighting bugs
-        return true;
-    }
-
-    @Override
     protected final ItemStack createStackedBlock(IBlockState state)
     {
         final DefinesSlab subBlock = subBlocks.get(mask(this.getMetaFromState(state)));
@@ -105,14 +99,14 @@ public abstract class SlabBlock extends BlockSlab
         }
     }
 
-    public final void registerBlockModels(int i) {
-        String[] pair = getUnwrappedUnlocalizedName(getUnlocalizedName()).split(":");
-        Item itemWoodBlock = GameRegistry.findItem(pair[0],"s"+pair[1]+i);
+    public void registerBlockModels()
+    {
         for (DefinesSlab define : subBlocks())
         {
-            ModelResourceLocation typeLocation = new ModelResourceLocation(pair[0]+":"+pair[1]+"_"+define.slabSubBlockVariant().name().toLowerCase(),"inventory");
-            int test = define.slabSubBlockVariant().ordinal();
-            ModelLoader.setCustomModelResourceLocation(itemWoodBlock, define.slabSubBlockVariant().ordinal(), typeLocation);
+            ModelResourceLocation typeLocation = new ModelResourceLocation(getRegistryName(),"half=bottom,variant="+define.slabSubBlockVariant().name().toLowerCase());
+            //ModelResourceLocation typeItemLocation = new ModelResourceLocation(getRegistryName().toString().substring(0,getRegistryName().toString().length()-1)+"_"+define.leavesSubBlockVariant().name().toLowerCase(),"inventory");
+            Item blockItem = Item.getItemFromBlock(define.singleSlabBlock());
+            ModelLoader.setCustomModelResourceLocation(blockItem,define.slabSubBlockVariant().ordinal(),typeLocation);
         }
     }
 

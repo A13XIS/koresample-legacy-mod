@@ -8,14 +8,13 @@ import inc.a13xis.legacy.koresample.tree.DefinesSapling;
 import net.minecraft.block.BlockBush;
 import net.minecraft.block.IGrowable;
 import net.minecraft.block.properties.PropertyInteger;
-import net.minecraft.block.state.BlockState;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.WorldGenerator;
 import net.minecraftforge.client.model.ModelLoader;
@@ -86,17 +85,16 @@ public abstract class SaplingBlock extends BlockBush implements IGrowable
             subBlocks.add(new ItemStack(item, 1, i));
     }
 
-    public final void registerBlockModels(int i)
+    public void registerBlockModels()
     {
-        String[] pair = getUnwrappedUnlocalizedName(getUnlocalizedName()).split(":");
-        Item itemWoodBlock = GameRegistry.findItem(pair[0],pair[1]+i);
         for (DefinesSapling define : subBlocks())
         {
-            ModelResourceLocation typeLocation = new ModelResourceLocation(getUnwrappedUnlocalizedName(getUnlocalizedName())+"_"+define.saplingSubBlockVariant().name().toLowerCase());
-            ModelLoader.setCustomModelResourceLocation(itemWoodBlock, define.saplingSubBlockVariant().ordinal(), typeLocation);
+            ModelResourceLocation typeLocation = new ModelResourceLocation(getRegistryName(),"stage=0,variant="+define.saplingSubBlockVariant().name().toLowerCase());
+            //ModelResourceLocation typeItemLocation = new ModelResourceLocation(getRegistryName().toString().substring(0,getRegistryName().toString().length()-1)+"_"+define.leavesSubBlockVariant().name().toLowerCase(),"inventory");
+            Item blockItem = Item.getItemFromBlock(define.saplingBlock());
+            ModelLoader.setCustomModelResourceLocation(blockItem,define.saplingSubBlockVariant().ordinal(),typeLocation);
         }
     }
-
     @Override
     public final String getUnlocalizedName()
     {
@@ -174,7 +172,7 @@ public abstract class SaplingBlock extends BlockBush implements IGrowable
      */
     public abstract int getMetaFromState(IBlockState state);
 
-    protected abstract BlockState createBlockState();
+    protected abstract BlockStateContainer createBlockState();
 
 
     
