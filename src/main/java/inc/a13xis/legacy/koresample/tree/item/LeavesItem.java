@@ -2,9 +2,7 @@ package inc.a13xis.legacy.koresample.tree.item;
 
 import inc.a13xis.legacy.koresample.tree.block.LeavesBlock;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockLeaves;
 import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemLeaves;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -34,11 +32,7 @@ public class LeavesItem extends ItemBlock
         return damage | 4;
     }
 
-    @SideOnly(Side.CLIENT)
-    public int getColorFromItemStack(ItemStack stack, int renderPass)
-    {
-        return this.leaves.getRenderColor(this.leaves.getStateFromMeta(stack.getMetadata()));
-    }
+
 
     /**
      * Returns the unlocalized name of this item. This version accepts an ItemStack so different stacks can have

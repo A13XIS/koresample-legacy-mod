@@ -5,23 +5,27 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import inc.a13xis.legacy.koresample.tree.DefinesLeaves;
 import inc.a13xis.legacy.koresample.tree.DefinesWood;
+import inc.a13xis.legacy.koresample.tree.item.LeavesItem;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockLeavesBase;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.EnumWorldBlockLayer;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ColorizerFoliage;
+import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
@@ -34,7 +38,7 @@ import java.util.Random;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-public abstract class LeavesBlock extends BlockLeavesBase implements net.minecraftforge.common.IShearable
+public abstract class LeavesBlock extends Block implements net.minecraftforge.common.IShearable
 {
     public static final int CAPACITY = 4;
     private static final int METADATA_MASK = CAPACITY - 1;
@@ -49,14 +53,14 @@ public abstract class LeavesBlock extends BlockLeavesBase implements net.minecra
 
     protected LeavesBlock(Collection<? extends DefinesLeaves> subBlocks)
     {
-        super(Material.leaves, false);
+        super(Material.LEAVES);
         checkArgument(!subBlocks.isEmpty());
         checkArgument(subBlocks.size() <= CAPACITY);
         this.subBlocks = ImmutableList.copyOf(subBlocks);
         this.setTickRandomly(true);
         this.setHardness(0.2F);
         this.setLightOpacity(1);
-        this.setStepSound(soundTypeGrass);
+        this.setSoundType(SoundType.PLANT);
         setUnlocalizedName("leaves");
     }
 
@@ -68,25 +72,7 @@ public abstract class LeavesBlock extends BlockLeavesBase implements net.minecra
         return unlocalizedName.substring(unlocalizedName.indexOf('.') + 1);
     }
 
-
-
-    @SideOnly(Side.CLIENT)
-    private static boolean isFancyGraphics() {return Minecraft.getMinecraft().gameSettings.fancyGraphics;}
-
     protected final List<DefinesLeaves> subBlocks() { return Collections.unmodifiableList(subBlocks); }
-
-    @SideOnly(Side.CLIENT)
-    public final int getRenderColor(IBlockState state) {
-        int metadata=this.getMetaFromState(state);
-        return subBlocks.get(mask(metadata)).getLeavesInventoryColor();
-    }
-
-    @SideOnly(Side.CLIENT)
-    public final int colorMultiplier(IBlockAccess blockAccess, BlockPos pos, int rp)
-    {
-        final int metadata = mask(this.getMetaFromState(blockAccess.getBlockState(pos)));
-        return subBlocks.get(metadata).getLeavesColor(blockAccess, pos);
-    }
 
     @Override
     public final Item getItemDropped(IBlockState state, Random unused, int unused2)
@@ -100,10 +86,6 @@ public abstract class LeavesBlock extends BlockLeavesBase implements net.minecra
         return subBlocks.get(mask(this.getMetaFromState(state))).saplingDefinition().saplingSubBlockVariant().ordinal();
     }
 
-    @SideOnly(Side.CLIENT)
-    @Override
-    public final boolean isOpaqueCube() { return !isFancyGraphics(); }
-
     public final String[] getSpeciesNames() //func_150125_e
     {
         final List<String> names = Lists.newArrayList();
@@ -112,17 +94,14 @@ public abstract class LeavesBlock extends BlockLeavesBase implements net.minecra
         return names.toArray(new String[names.size()]);
     }
 
-    @Override
     public final String getUnlocalizedName()
     {
         return String.format("tile.%s%s", resourcePrefix(), getUnwrappedUnlocalizedName(super.getUnlocalizedName()));
     }
 
-    @Override
+    @Deprecated
     public final int getDamageValue(World world, BlockPos pos) { return this.getMetaFromState(world.getBlockState(pos)) & 3; }
 
-    @SideOnly(Side.CLIENT)
-    @Override
     public final void getSubBlocks(Item item, CreativeTabs unused, List subBlocks)
     {
         for (int i = 0; i < this.subBlocks.size(); i++)
@@ -130,27 +109,27 @@ public abstract class LeavesBlock extends BlockLeavesBase implements net.minecra
             subBlocks.add(new ItemStack(item, 1, i));
     }
 
-    public final void registerBlockModels(int i)
+    public void registerBlockModels()
     {
-        String[] pair = getUnwrappedUnlocalizedName(getUnlocalizedName()).split(":");
-        Item itemWoodBlock = GameRegistry.findItem(pair[0],pair[1]+i);
         for (DefinesLeaves define : subBlocks())
         {
-            ModelResourceLocation typeLocation = new ModelResourceLocation(getUnwrappedUnlocalizedName(getUnlocalizedName())+"_"+define.leavesSubBlockVariant().name().toLowerCase());
-            ModelLoader.setCustomModelResourceLocation(itemWoodBlock, define.leavesSubBlockVariant().ordinal(), typeLocation);
+            ModelResourceLocation typeLocation = new ModelResourceLocation(getRegistryName(),"check_decay=true,decayable=true,variant="+define.leavesSubBlockVariant().name().toLowerCase());
+            //ModelResourceLocation typeItemLocation = new ModelResourceLocation(getRegistryName().toString().substring(0,getRegistryName().toString().length()-1)+"_"+define.leavesSubBlockVariant().name().toLowerCase(),"inventory");
+            Item blockItem = Item.getItemFromBlock(define.leavesBlock());
+            ModelLoader.setCustomModelResourceLocation(blockItem,define.leavesSubBlockVariant().ordinal(),typeLocation);
         }
     }
 
     protected abstract String resourcePrefix();
 
+    @Deprecated
     @SideOnly(Side.CLIENT)
-    @Override
     public final boolean shouldSideBeRendered(IBlockAccess blockAccess, BlockPos pos, EnumFacing side)
     {
-        final Block block = blockAccess.getBlockState(pos).getBlock();
-        return (side.getIndex() == 0 && minY > 0.0D || side.getIndex() == 1 && maxY < 1.0D || side.getIndex() == 2 && minZ > 0.0D ||
-                        side.getIndex() == 3 && maxZ < 1.0D || side.getIndex() == 4 && minX > 0.0D || side.getIndex() == 5 && maxX < 1.0D ||
-                        !blockAccess.getBlockState(pos).getBlock().isOpaqueCube());
+        final IBlockState state = blockAccess.getBlockState(pos);
+        return (side.getIndex() == 0 && state.getBoundingBox(blockAccess,pos).minY > 0.0D || side.getIndex() == 1 && state.getBoundingBox(blockAccess,pos).maxY < 1.0D || side.getIndex() == 2 && state.getBoundingBox(blockAccess,pos).minZ > 0.0D ||
+                        side.getIndex() == 3 && state.getBoundingBox(blockAccess,pos).maxZ < 1.0D || side.getIndex() == 4 && state.getBoundingBox(blockAccess,pos).minX > 0.0D || side.getIndex() == 5 && state.getBoundingBox(blockAccess,pos).maxX < 1.0D ||
+                        !blockAccess.getBlockState(pos).getBlock().isNormalCube(blockAccess.getBlockState(pos),blockAccess,pos));
     }
 
     @Override
@@ -184,9 +163,9 @@ public abstract class LeavesBlock extends BlockLeavesBase implements net.minecra
                         BlockPos blockpos1 = pos.add(i1, j1, k1);
                         IBlockState iblockstate1 = worldIn.getBlockState(blockpos1);
 
-                        if (iblockstate1.getBlock().isLeaves(worldIn, blockpos1))
+                        if (iblockstate1.getBlock().isLeaves(state,worldIn,blockpos1))
                         {
-                            iblockstate1.getBlock().beginLeavesDecay(worldIn, blockpos1);
+                            iblockstate1.getBlock().beginLeavesDecay(state,worldIn, blockpos1);
                         }
                     }
                 }
@@ -230,9 +209,9 @@ public abstract class LeavesBlock extends BlockLeavesBase implements net.minecra
                                 BlockPos tmp = new BlockPos(j + k1, k + l1, l + i2);
                                 Block block = worldIn.getBlockState(tmp).getBlock();
 
-                                if (!block.canSustainLeaves(worldIn, tmp))
+                                if (!block.canSustainLeaves(state,worldIn, tmp))
                                 {
-                                    if (block.isLeaves(worldIn, tmp))
+                                    if (block.isLeaves(state,worldIn, tmp))
                                     {
                                         this.surroundings[(k1 + j1) * i1 + (l1 + j1) * b1 + i2 + j1] = -2;
                                     }
@@ -312,18 +291,69 @@ public abstract class LeavesBlock extends BlockLeavesBase implements net.minecra
     @SideOnly(Side.CLIENT)
     public void randomDisplayTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
     {
-        if (worldIn.canLightningStrike(pos.up()) && !World.doesBlockHaveSolidTopSurface(worldIn, pos.down()) && rand.nextInt(15) == 1)
+        if (canLightningStrike(worldIn,pos.up()) && !state.getBlock().isSideSolid(state,worldIn, pos.down(),EnumFacing.UP) && rand.nextInt(15) == 1)
         {
             double d0 = (double)((float)pos.getX() + rand.nextFloat());
             double d1 = (double)pos.getY() - 0.05D;
             double d2 = (double)((float)pos.getZ() + rand.nextFloat());
             worldIn.spawnParticle(EnumParticleTypes.DRIP_WATER, d0, d1, d2, 0.0D, 0.0D, 0.0D, new int[0]);
         }
+
+    }
+
+    public boolean canLightningStrike(World world,BlockPos pos)
+    {
+        if (!world.isRaining())
+        {
+            return false;
+        }
+        else if (!world.canSeeSky(pos))
+        {
+            return false;
+        }
+        else if (world.getPrecipitationHeight(pos).getY() > pos.getY())
+        {
+            return false;
+        }
+        else
+        {
+            Biome biomegenbase = world.getBiomeGenForCoords(pos);
+            return biomegenbase.getEnableSnow() ? false : (this.canSnowAtBody(world,pos, false) ? false : biomegenbase.canRain());
+        }
+    }
+
+    public boolean canSnowAtBody(World w,BlockPos pos, boolean checkLight)
+    {
+        Biome biomegenbase = w.getBiomeGenForCoords(pos);
+        float f = biomegenbase.getFloatTemperature(pos);
+
+        if (f > 0.15F)
+        {
+            return false;
+        }
+        else if (!checkLight)
+        {
+            return true;
+        }
+        else
+        {
+            if (pos.getY() >= 0 && pos.getY() < 256 && w.getLightFor(EnumSkyBlock.BLOCK, pos) < 10)
+            {
+                Block block = w.getBlockState(pos).getBlock();
+
+                if (block.isAir(w.getBlockState(pos),w, pos) && Blocks.SNOW_LAYER.canPlaceBlockAt(w, pos))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
     }
 
     private void destroy(World worldIn, BlockPos pos)
     {
-        this.dropBlockAsItem(worldIn, pos, worldIn.getBlockState(pos), 0);
+        this.dropBlockAsItemWithChance(worldIn, pos, worldIn.getBlockState(pos), 100,0);
         worldIn.setBlockToAir(pos);
     }
 
@@ -353,21 +383,10 @@ public abstract class LeavesBlock extends BlockLeavesBase implements net.minecra
         return 20;
     }
 
-    /**
-     * Pass true to draw this block using fancy graphics, or false for fast graphics.
-     */
     @SideOnly(Side.CLIENT)
-    public void setGraphicsLevel(boolean fancy)
+    public BlockRenderLayer getBlockLayer()
     {
-        this.isTransparent = fancy;
-        this.fancyGraphics = fancy;
-        this.iconIndex = fancy ? 0 : 1;
-    }
-
-    @SideOnly(Side.CLIENT)
-    public EnumWorldBlockLayer getBlockLayer()
-    {
-        return EnumWorldBlockLayer.CUTOUT_MIPPED;
+        return BlockRenderLayer.CUTOUT;
     }
 
     public boolean isVisuallyOpaque()
@@ -375,12 +394,17 @@ public abstract class LeavesBlock extends BlockLeavesBase implements net.minecra
         return false;
     }
 
+    @Override
+    public boolean isOpaqueCube(IBlockState state)
+    {
+        return false;
+    }
+
     public abstract Enum getWoodType(int meta);
 
     @Override public boolean isShearable(ItemStack item, IBlockAccess world, BlockPos pos){ return true; }
-    @Override public boolean isLeaves(IBlockAccess world, BlockPos pos){ return true; }
+    public boolean isLeaves(IBlockAccess world, BlockPos pos){ return true; }
 
-    @Override
     public void beginLeavesDecay(World world, BlockPos pos)
     {
         IBlockState state = world.getBlockState(pos);
@@ -419,4 +443,15 @@ public abstract class LeavesBlock extends BlockLeavesBase implements net.minecra
         ret.addAll(this.captureDrops(false));
         return ret;
     }
+
+    public static String getRawUnlocalizedName(LeavesBlock leaves) {
+        String unwrapped=getUnwrappedUnlocalizedName(leaves.getUnlocalizedName());
+        return unwrapped.substring(unwrapped.indexOf(":")+1);
+    }
+
+    /*@SideOnly(Side.CLIENT)
+    public int getColorFromItemStack(ItemStack stack, int renderPass)
+    {
+        return Colorizer.getRenderColor(this.leaves.getStateFromMeta(stack.getMetadata()));
+    }*/
 }
