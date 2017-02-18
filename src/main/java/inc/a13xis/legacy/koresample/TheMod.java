@@ -15,7 +15,7 @@ public final class TheMod
 {
     public static final String MOD_ID = "koresample";
     public static final String MOD_NAME = "Kore Sample";
-    public static final String MOD_VERSION = "1.10.2-L1";
+    public static final String MOD_VERSION = "1.10.2-L1.1";
     private static final String RESOURCE_PREFIX = MOD_ID.toLowerCase() + ':';
 
     @Instance(MOD_ID)
