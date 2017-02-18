@@ -3,8 +3,8 @@
   "modid": "koresample",
   "name": "Kore Sample",
   "description": "Kore Sample provides a set of tools and base classes for other Minecraft mods that depend on it.",
-  "version": "1.9.4-L1",
-  "mcversion": "1.9.4",
+  "version": "1.10.2-L1",
+  "mcversion": "1.10.2",
   "url": "",
   "updateUrl": "",
   "authorList": [

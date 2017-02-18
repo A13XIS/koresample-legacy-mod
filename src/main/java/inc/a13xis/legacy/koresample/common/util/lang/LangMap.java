@@ -1,6 +1,6 @@
 package inc.a13xis.legacy.koresample.common.util.lang;
 
-import net.minecraft.client.resources.I18n;
+import net.minecraft.util.text.translation.I18n;
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
 
@@ -38,7 +38,7 @@ public class LangMap {
 
     public String formatAndSafeTranslate(LangMap alternative, String toTranslate, String... formatArgs){
         if (toTranslate == null) throw new IllegalArgumentException("Translation Key must not be null");
-        String s = I18n.format(toTranslate,formatArgs);
+        String s = net.minecraft.client.resources.I18n.format(toTranslate,formatArgs);
         if(s.contains(toTranslate)){
             String temp = langmap.get(toTranslate);
             s = temp==null? s : String.format(temp,formatArgs);
@@ -49,4 +49,16 @@ public class LangMap {
         return s;
     }
 
+    public String formatAndSafeServerTranslate(LangMap alternative, String toTranslate, String... formatArgs) {
+        if (toTranslate == null) throw new IllegalArgumentException("Translation Key must not be null");
+        String s = I18n.translateToLocalFormatted(toTranslate,formatArgs);
+        if(s.contains(toTranslate)){
+            String temp = langmap.get(toTranslate);
+            s = temp==null? s : String.format(temp,formatArgs);
+        }
+        if(s.contains(toTranslate)&&alternative!=null){
+            s=alternative.formatAndSafeServerTranslate(alternative,toTranslate,formatArgs);
+        }
+        return s;
+    }
 }

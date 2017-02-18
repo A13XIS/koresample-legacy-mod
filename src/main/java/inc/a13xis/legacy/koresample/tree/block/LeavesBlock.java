@@ -317,14 +317,14 @@ public abstract class LeavesBlock extends Block implements net.minecraftforge.co
         }
         else
         {
-            Biome biomegenbase = world.getBiomeGenForCoords(pos);
+            Biome biomegenbase = world.getBiome(pos);
             return biomegenbase.getEnableSnow() ? false : (this.canSnowAtBody(world,pos, false) ? false : biomegenbase.canRain());
         }
     }
 
     public boolean canSnowAtBody(World w,BlockPos pos, boolean checkLight)
     {
-        Biome biomegenbase = w.getBiomeGenForCoords(pos);
+        Biome biomegenbase = w.getBiome(pos);
         float f = biomegenbase.getFloatTemperature(pos);
 
         if (f > 0.15F)
