@@ -42,6 +42,6 @@ public abstract class StairsBlock extends BlockStairs
             ModelResourceLocation typeLocation = new ModelResourceLocation(getRegistryName(),"facing=east,half=bottom,shape=straight");
             //ModelResourceLocation typeItemLocation = new ModelResourceLocation(getRegistryName().toString().substring(0,getRegistryName().toString().length()-1)+"_"+define.leavesSubBlockVariant().name().toLowerCase(),"inventory");
             Item blockItem = Item.getItemFromBlock(this);
-            ModelLoader.setCustomModelResourceLocation(blockItem,variant.ordinal(),typeLocation);
+            ModelLoader.setCustomModelResourceLocation(blockItem,0,typeLocation);
     }
 }
