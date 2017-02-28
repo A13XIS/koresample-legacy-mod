@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.client.model.ModelLoader;
@@ -72,7 +73,6 @@ public abstract class SlabBlock extends BlockSlab
         return Item.getItemFromBlock(subBlock.singleSlabBlock());
     }
 
-    @Override
     protected final ItemStack createStackedBlock(IBlockState state)
     {
         final DefinesSlab subBlock = subBlocks.get(mask(this.getMetaFromState(state)));
@@ -87,7 +87,7 @@ public abstract class SlabBlock extends BlockSlab
 
     @SideOnly(Side.CLIENT)
     @Override
-    public final void getSubBlocks(Item item, CreativeTabs unused, List subblocks)
+    public final void getSubBlocks(Item item, CreativeTabs unused, NonNullList<ItemStack> subblocks)
     {
         if (isSingleSlab(item))
         {

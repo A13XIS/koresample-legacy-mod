@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
@@ -56,10 +57,9 @@ public abstract class LogBlock extends BlockLog
         return String.format("tile.%s%s", resourcePrefix(), getUnwrappedUnlocalizedName(super.getUnlocalizedName()));
     }
 
-    @SuppressWarnings("unchecked")
     @SideOnly(Side.CLIENT)
     @Override
-    public final void getSubBlocks(Item item, CreativeTabs unused, List subblocks)
+    public final void getSubBlocks(Item item, CreativeTabs unused, NonNullList<ItemStack> subblocks)
     {
         for (int i = 0; i < subBlocks.size(); i++)
             //noinspection ObjectAllocationInLoop

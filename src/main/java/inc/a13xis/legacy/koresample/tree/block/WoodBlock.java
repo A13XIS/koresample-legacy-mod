@@ -13,6 +13,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
@@ -66,7 +67,7 @@ public abstract class WoodBlock extends Block
     }
 
     @Override
-    public final void getSubBlocks(Item item, CreativeTabs unused, List subblocks)
+    public final void getSubBlocks(Item item, CreativeTabs unused, NonNullList<ItemStack> subblocks)
     {
         for (int i = 0; i < subBlocks.size(); i++)
             //noinspection ObjectAllocationInLoop

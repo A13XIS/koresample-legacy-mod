@@ -49,9 +49,9 @@ public class LangMap {
         return s;
     }
 
-    public String formatAndSafeServerTranslate(LangMap alternative, String toTranslate, String... formatArgs) {
+    public String formatAndSafeServerTranslate(LangMap alternative, String toTranslate, String... formatArgs){
         if (toTranslate == null) throw new IllegalArgumentException("Translation Key must not be null");
-        String s = I18n.translateToLocalFormatted(toTranslate,formatArgs);
+        String s = I18n.translateToLocalFormatted(toTranslate, formatArgs);
         if(s.contains(toTranslate)){
             String temp = langmap.get(toTranslate);
             s = temp==null? s : String.format(temp,formatArgs);
@@ -61,4 +61,5 @@ public class LangMap {
         }
         return s;
     }
+
 }

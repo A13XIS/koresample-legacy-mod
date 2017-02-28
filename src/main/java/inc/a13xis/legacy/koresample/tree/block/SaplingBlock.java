@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.WorldGenerator;
@@ -75,10 +76,9 @@ public abstract class SaplingBlock extends BlockBush implements IGrowable
         if (!treeGen.generate(world, rand, pos)) world.setBlockState(pos,this.getStateFromMeta(metadata),4);
     }
 
-    @SuppressWarnings("unchecked")
     @SideOnly(Side.CLIENT)
     @Override
-    public final void getSubBlocks(Item item, CreativeTabs unused, List subBlocks)
+    public final void getSubBlocks(Item item, CreativeTabs unused, NonNullList<ItemStack> subBlocks)
     {
         for (int i = 0; i < this.subBlocks.size(); i++)
             //noinspection ObjectAllocationInLoop

@@ -33,13 +33,14 @@ public class WeightedSet<T>  implements Collection<T>
 
     public T randomPick()
     {
-        final int pick = random.nextInt(elements.size()-1);
+        final int pick = random.nextInt(elements.size());
         int count = 0;
         for (final T t : elements.elementSet())
         {
             count += elements.count(t);
             if (count >= pick) return t;
         }
+        //noinspection ReturnOfNull
         return null;
     }
 
