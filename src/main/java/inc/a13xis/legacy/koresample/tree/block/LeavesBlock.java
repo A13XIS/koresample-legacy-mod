@@ -402,6 +402,8 @@ public abstract class LeavesBlock extends Block implements net.minecraftforge.co
 
     public abstract Enum getWoodType(int meta);
 
+    protected abstract boolean needMask();
+
     @Override public boolean isShearable(ItemStack item, IBlockAccess world, BlockPos pos){ return true; }
     public boolean isLeaves(IBlockAccess world, BlockPos pos){ return true; }
 
@@ -428,7 +430,7 @@ public abstract class LeavesBlock extends Block implements net.minecraftforge.co
         }
 
         if (rand.nextInt(chance) == 0)
-            ret.add(new ItemStack(getItemDropped(state, rand, fortune), 1, damageDropped(state)));
+            ret.add(new ItemStack(getItemDropped(state, rand, fortune), 1, needMask()?damageDropped(state)+4:damageDropped(state)));
 
         chance = 200;
         if (fortune > 0)
