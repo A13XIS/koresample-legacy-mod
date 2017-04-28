@@ -13,4 +13,8 @@ public interface TreeTaxonomy
     Iterable<? extends DefinesStairs> stairsDefinitions();
 
     Iterable<? extends DefinesWood> woodDefinitions();
+
+    Iterable<? extends DefinesDoor> doorDefinitions();
+
+    Iterable<? extends DefinesFence> fenceDefinitions();
 }
