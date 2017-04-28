@@ -122,6 +122,7 @@ public abstract class LeavesBlock extends BlockLeaves
             subBlocks.add(new ItemStack(item, 1, i));
     }
 
+    @SideOnly(Side.CLIENT)
     public void registerBlockModels()
     {
         for (DefinesLeaves define : subBlocks())

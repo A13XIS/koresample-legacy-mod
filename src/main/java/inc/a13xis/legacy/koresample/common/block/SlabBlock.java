@@ -99,6 +99,7 @@ public abstract class SlabBlock extends BlockSlab
         }
     }
 
+    @SideOnly(Side.CLIENT)
     public void registerBlockModels()
     {
         for (DefinesSlab define : subBlocks())

@@ -15,6 +15,8 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -50,6 +52,7 @@ public abstract class WoodBlock extends Block
         return ImmutableList.copyOf(names);
     }
 
+    @SideOnly(Side.CLIENT)
     public void registerBlockModels() {
         for (DefinesWood define : subBlocks())
         {

@@ -85,6 +85,7 @@ public abstract class SaplingBlock extends BlockBush implements IGrowable
             subBlocks.add(new ItemStack(item, 1, i));
     }
 
+    @SideOnly(Side.CLIENT)
     public void registerBlockModels()
     {
         for (DefinesSapling define : subBlocks())
