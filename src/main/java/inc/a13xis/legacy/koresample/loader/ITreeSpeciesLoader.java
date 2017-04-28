@@ -1,6 +1,8 @@
 package inc.a13xis.legacy.koresample.loader;
 
+import inc.a13xis.legacy.koresample.common.block.DoorBlock;
 import inc.a13xis.legacy.koresample.common.util.slab.TheSingleSlabRegistry;
+import inc.a13xis.legacy.koresample.tree.DefinesDoor;
 import inc.a13xis.legacy.koresample.tree.TreeBlockFactory;
 
 public interface ITreeSpeciesLoader
@@ -19,5 +21,9 @@ public interface ITreeSpeciesLoader
     void loadStairsBlocks(TreeBlockFactory factory);
 
     void loadWoodBlocks(TreeBlockFactory factory);
+
+    void loadDoorBlocks(TreeBlockFactory factory);
+
+    void loadFenceBlocks(TreeBlockFactory factory);
 
 }

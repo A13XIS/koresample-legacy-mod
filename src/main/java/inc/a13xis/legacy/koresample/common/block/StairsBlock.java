@@ -6,6 +6,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockStairs;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
@@ -39,7 +40,7 @@ public abstract class StairsBlock extends BlockStairs
 
     public void registerBlockModel()
     {
-            ModelResourceLocation typeLocation = new ModelResourceLocation(getRegistryName(),"facing=east,half=bottom,shape=straight");
+            ModelResourceLocation typeLocation = new ModelResourceLocation(new ResourceLocation(getRegistryName().getResourceDomain(),getRegistryName().getResourcePath()),"inventory");
             //ModelResourceLocation typeItemLocation = new ModelResourceLocation(getRegistryName().toString().substring(0,getRegistryName().toString().length()-1)+"_"+define.leavesSubBlockVariant().name().toLowerCase(),"inventory");
             Item blockItem = Item.getItemFromBlock(this);
             ModelLoader.setCustomModelResourceLocation(blockItem,0,typeLocation);
