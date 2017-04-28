@@ -1,5 +1,6 @@
 package inc.a13xis.legacy.koresample.tree;
 
+import inc.a13xis.legacy.koresample.common.block.DoorBlock;
 import inc.a13xis.legacy.koresample.common.util.slab.SingleDoubleSlab;
 import inc.a13xis.legacy.koresample.tree.block.LeavesBlock;
 import inc.a13xis.legacy.koresample.tree.block.LogBlock;
@@ -18,6 +19,8 @@ public interface TreeBlockFactory
     SingleDoubleSlab createSlabBlocks(Iterable<DefinesSlab> subBlocks);
 
     StairsBlock createStairsBlock(DefinesStairs definition);
+
+    DoorBlock createDoorBlock(DefinesDoor definition);
 
     WoodBlock createWoodBlock(Iterable<DefinesWood> subBlocks);
 

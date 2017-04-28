@@ -7,6 +7,8 @@ import inc.a13xis.legacy.koresample.tree.DefinesLeaves;
 import inc.a13xis.legacy.koresample.tree.DefinesWood;
 import inc.a13xis.legacy.koresample.tree.item.LeavesItem;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockLeaves;
+import net.minecraft.block.BlockPlanks;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
@@ -38,22 +40,17 @@ import java.util.Random;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-public abstract class LeavesBlock extends Block implements net.minecraftforge.common.IShearable
+public abstract class LeavesBlock extends BlockLeaves
 {
     public static final int CAPACITY = 4;
     private static final int METADATA_MASK = CAPACITY - 1;
-    public static final PropertyBool DECAYABLE = PropertyBool.create("decayable");
-    public static final PropertyBool CHECK_DECAY = PropertyBool.create("check_decay");
     int[] surroundings;
-    @SideOnly(Side.CLIENT)
-    protected int iconIndex;
-    @SideOnly(Side.CLIENT)
-    protected boolean isTransparent;
+
     private final ImmutableList<DefinesLeaves> subBlocks;
 
     protected LeavesBlock(Collection<? extends DefinesLeaves> subBlocks)
     {
-        super(Material.LEAVES);
+        super();
         checkArgument(!subBlocks.isEmpty());
         checkArgument(subBlocks.size() <= CAPACITY);
         this.subBlocks = ImmutableList.copyOf(subBlocks);
@@ -62,6 +59,29 @@ public abstract class LeavesBlock extends Block implements net.minecraftforge.co
         this.setLightOpacity(1);
         this.setSoundType(SoundType.PLANT);
         setUnlocalizedName("leaves");
+    }
+
+    @SideOnly(Side.CLIENT)
+    public BlockRenderLayer getBlockLayer()
+    {
+        return BlockRenderLayer.CUTOUT;
+    }
+
+    @Override
+    public boolean isOpaqueCube(IBlockState state)
+    {
+        return false;
+    }
+
+    @Override
+    public boolean isFullCube(IBlockState state)
+    {
+        return true;
+    }
+
+    public boolean shouldSideBeRendered(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side)
+    {
+        return true;
     }
 
     private static int mask(int metadata) {return metadata & METADATA_MASK;}
@@ -87,7 +107,7 @@ public abstract class LeavesBlock extends Block implements net.minecraftforge.co
     }
 
     public final String[] getSpeciesNames() //func_150125_e
-    {
+        {
         final List<String> names = Lists.newArrayList();
         for (final DefinesLeaves subBlock : subBlocks)
             names.add(subBlock.speciesName());
@@ -122,150 +142,112 @@ public abstract class LeavesBlock extends Block implements net.minecraftforge.co
 
     protected abstract String resourcePrefix();
 
-    @Deprecated
-    @SideOnly(Side.CLIENT)
-    public final boolean shouldSideBeRendered(IBlockAccess blockAccess, BlockPos pos, EnumFacing side)
-    {
-        final IBlockState state = blockAccess.getBlockState(pos);
-        return (side.getIndex() == 0 && state.getBoundingBox(blockAccess,pos).minY > 0.0D || side.getIndex() == 1 && state.getBoundingBox(blockAccess,pos).maxY < 1.0D || side.getIndex() == 2 && state.getBoundingBox(blockAccess,pos).minZ > 0.0D ||
-                        side.getIndex() == 3 && state.getBoundingBox(blockAccess,pos).maxZ < 1.0D || side.getIndex() == 4 && state.getBoundingBox(blockAccess,pos).minX > 0.0D || side.getIndex() == 5 && state.getBoundingBox(blockAccess,pos).maxX < 1.0D ||
-                        !blockAccess.getBlockState(pos).getBlock().isNormalCube(blockAccess.getBlockState(pos),blockAccess,pos));
-    }
-
     @Override
     public String toString()
     {
         return Objects.toStringHelper(this).add("subBlocks", subBlocks).toString();
     }
 
-    @SideOnly(Side.CLIENT)
-    public int getBlockColor()
-    {
-        return ColorizerFoliage.getFoliageColor(0.5D, 1.0D);
+    public abstract BlockPlanks.EnumType getWoodType(int meta);
+
+    public abstract Enum getModWoodType(int meta);
+
+    public static String getRawUnlocalizedName(LeavesBlock leaves) {
+        String unwrapped=getUnwrappedUnlocalizedName(leaves.getUnlocalizedName());
+        return unwrapped.substring(unwrapped.indexOf(":")+1);
     }
 
-    public void breakBlock(World worldIn, BlockPos pos, IBlockState state)
-    {
-        byte b0 = 1;
-        int i = b0 + 1;
-        int j = pos.getX();
-        int k = pos.getY();
-        int l = pos.getZ();
-
-        if (worldIn.isAreaLoaded(new BlockPos(j - i, k - i, l - i), new BlockPos(j + i, k + i, l + i)))
-        {
-            for (int i1 = -b0; i1 <= b0; ++i1)
-            {
-                for (int j1 = -b0; j1 <= b0; ++j1)
-                {
-                    for (int k1 = -b0; k1 <= b0; ++k1)
-                    {
-                        BlockPos blockpos1 = pos.add(i1, j1, k1);
-                        IBlockState iblockstate1 = worldIn.getBlockState(blockpos1);
-
-                        if (iblockstate1.getBlock().isLeaves(state,worldIn,blockpos1))
-                        {
-                            iblockstate1.getBlock().beginLeavesDecay(state,worldIn, blockpos1);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
+    @Override
     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
     {
         if (!worldIn.isRemote)
         {
             if (((Boolean)state.getValue(CHECK_DECAY)).booleanValue() && ((Boolean)state.getValue(DECAYABLE)).booleanValue())
             {
-                byte b0 = 4;
-                int i = b0 + 1;
-                int j = pos.getX();
-                int k = pos.getY();
-                int l = pos.getZ();
-                byte b1 = 32;
-                int i1 = b1 * b1;
-                int j1 = b1 / 2;
+                int i = 4;
+                int j = 5;
+                int k = pos.getX();
+                int l = pos.getY();
+                int i1 = pos.getZ();
+                int j1 = 32;
+                int k1 = 1024;
+                int l1 = 16;
 
                 if (this.surroundings == null)
                 {
-                    this.surroundings = new int[b1 * b1 * b1];
+                    this.surroundings = new int[32768];
                 }
 
-                int k1;
-
-                if (worldIn.isAreaLoaded(new BlockPos(j - i, k - i, l - i), new BlockPos(j + i, k + i, l + i)))
+                if (worldIn.isAreaLoaded(new BlockPos(k - 5, l - 5, i1 - 5), new BlockPos(k + 5, l + 5, i1 + 5)))
                 {
-                    int l1;
-                    int i2;
+                    BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
 
-                    for (k1 = -b0; k1 <= b0; ++k1)
+                    for (int i2 = -4; i2 <= 4; ++i2)
                     {
-                        for (l1 = -b0; l1 <= b0; ++l1)
+                        for (int j2 = -4; j2 <= 4; ++j2)
                         {
-                            for (i2 = -b0; i2 <= b0; ++i2)
+                            for (int k2 = -4; k2 <= 4; ++k2)
                             {
-                                BlockPos tmp = new BlockPos(j + k1, k + l1, l + i2);
-                                Block block = worldIn.getBlockState(tmp).getBlock();
+                                IBlockState iblockstate = worldIn.getBlockState(blockpos$mutableblockpos.setPos(k + i2, l + j2, i1 + k2));
+                                Block block = iblockstate.getBlock();
 
-                                if (!block.canSustainLeaves(state,worldIn, tmp))
+                                if (!block.canSustainLeaves(iblockstate, worldIn, blockpos$mutableblockpos.setPos(k + i2, l + j2, i1 + k2)))
                                 {
-                                    if (block.isLeaves(state,worldIn, tmp))
+                                    if (block.isLeaves(iblockstate, worldIn, blockpos$mutableblockpos.setPos(k + i2, l + j2, i1 + k2)))
                                     {
-                                        this.surroundings[(k1 + j1) * i1 + (l1 + j1) * b1 + i2 + j1] = -2;
+                                        this.surroundings[(i2 + 16) * 1024 + (j2 + 16) * 32 + k2 + 16] = -2;
                                     }
                                     else
                                     {
-                                        this.surroundings[(k1 + j1) * i1 + (l1 + j1) * b1 + i2 + j1] = -1;
+                                        this.surroundings[(i2 + 16) * 1024 + (j2 + 16) * 32 + k2 + 16] = -1;
                                     }
                                 }
                                 else
                                 {
-                                    this.surroundings[(k1 + j1) * i1 + (l1 + j1) * b1 + i2 + j1] = 0;
+                                    this.surroundings[(i2 + 16) * 1024 + (j2 + 16) * 32 + k2 + 16] = 0;
                                 }
                             }
                         }
                     }
 
-                    for (k1 = 1; k1 <= 4; ++k1)
+                    for (int i3 = 1; i3 <= 4; ++i3)
                     {
-                        for (l1 = -b0; l1 <= b0; ++l1)
+                        for (int j3 = -4; j3 <= 4; ++j3)
                         {
-                            for (i2 = -b0; i2 <= b0; ++i2)
+                            for (int k3 = -4; k3 <= 4; ++k3)
                             {
-                                for (int j2 = -b0; j2 <= b0; ++j2)
+                                for (int l3 = -4; l3 <= 4; ++l3)
                                 {
-                                    if (this.surroundings[(l1 + j1) * i1 + (i2 + j1) * b1 + j2 + j1] == k1 - 1)
+                                    if (this.surroundings[(j3 + 16) * 1024 + (k3 + 16) * 32 + l3 + 16] == i3 - 1)
                                     {
-                                        if (this.surroundings[(l1 + j1 - 1) * i1 + (i2 + j1) * b1 + j2 + j1] == -2)
+                                        if (this.surroundings[(j3 + 16 - 1) * 1024 + (k3 + 16) * 32 + l3 + 16] == -2)
                                         {
-                                            this.surroundings[(l1 + j1 - 1) * i1 + (i2 + j1) * b1 + j2 + j1] = k1;
+                                            this.surroundings[(j3 + 16 - 1) * 1024 + (k3 + 16) * 32 + l3 + 16] = i3;
                                         }
 
-                                        if (this.surroundings[(l1 + j1 + 1) * i1 + (i2 + j1) * b1 + j2 + j1] == -2)
+                                        if (this.surroundings[(j3 + 16 + 1) * 1024 + (k3 + 16) * 32 + l3 + 16] == -2)
                                         {
-                                            this.surroundings[(l1 + j1 + 1) * i1 + (i2 + j1) * b1 + j2 + j1] = k1;
+                                            this.surroundings[(j3 + 16 + 1) * 1024 + (k3 + 16) * 32 + l3 + 16] = i3;
                                         }
 
-                                        if (this.surroundings[(l1 + j1) * i1 + (i2 + j1 - 1) * b1 + j2 + j1] == -2)
+                                        if (this.surroundings[(j3 + 16) * 1024 + (k3 + 16 - 1) * 32 + l3 + 16] == -2)
                                         {
-                                            this.surroundings[(l1 + j1) * i1 + (i2 + j1 - 1) * b1 + j2 + j1] = k1;
+                                            this.surroundings[(j3 + 16) * 1024 + (k3 + 16 - 1) * 32 + l3 + 16] = i3;
                                         }
 
-                                        if (this.surroundings[(l1 + j1) * i1 + (i2 + j1 + 1) * b1 + j2 + j1] == -2)
+                                        if (this.surroundings[(j3 + 16) * 1024 + (k3 + 16 + 1) * 32 + l3 + 16] == -2)
                                         {
-                                            this.surroundings[(l1 + j1) * i1 + (i2 + j1 + 1) * b1 + j2 + j1] = k1;
+                                            this.surroundings[(j3 + 16) * 1024 + (k3 + 16 + 1) * 32 + l3 + 16] = i3;
                                         }
 
-                                        if (this.surroundings[(l1 + j1) * i1 + (i2 + j1) * b1 + (j2 + j1 - 1)] == -2)
+                                        if (this.surroundings[(j3 + 16) * 1024 + (k3 + 16) * 32 + (l3 + 16 - 1)] == -2)
                                         {
-                                            this.surroundings[(l1 + j1) * i1 + (i2 + j1) * b1 + (j2 + j1 - 1)] = k1;
+                                            this.surroundings[(j3 + 16) * 1024 + (k3 + 16) * 32 + (l3 + 16 - 1)] = i3;
                                         }
 
-                                        if (this.surroundings[(l1 + j1) * i1 + (i2 + j1) * b1 + j2 + j1 + 1] == -2)
+                                        if (this.surroundings[(j3 + 16) * 1024 + (k3 + 16) * 32 + l3 + 16 + 1] == -2)
                                         {
-                                            this.surroundings[(l1 + j1) * i1 + (i2 + j1) * b1 + j2 + j1 + 1] = k1;
+                                            this.surroundings[(j3 + 16) * 1024 + (k3 + 16) * 32 + l3 + 16 + 1] = i3;
                                         }
                                     }
                                 }
@@ -274,11 +256,11 @@ public abstract class LeavesBlock extends Block implements net.minecraftforge.co
                     }
                 }
 
-                k1 = this.surroundings[j1 * i1 + j1 * b1 + j1];
+                int l2 = this.surroundings[16912];
 
-                if (k1 >= 0)
+                if (l2 >= 0)
                 {
-                    worldIn.setBlockState(pos, state.withProperty(CHECK_DECAY, Boolean.valueOf(false)), 4);
+
                 }
                 else
                 {
@@ -288,167 +270,10 @@ public abstract class LeavesBlock extends Block implements net.minecraftforge.co
         }
     }
 
-    @SideOnly(Side.CLIENT)
-    public void randomDisplayTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
-    {
-        if (canLightningStrike(worldIn,pos.up()) && !state.getBlock().isSideSolid(state,worldIn, pos.down(),EnumFacing.UP) && rand.nextInt(15) == 1)
-        {
-            double d0 = (double)((float)pos.getX() + rand.nextFloat());
-            double d1 = (double)pos.getY() - 0.05D;
-            double d2 = (double)((float)pos.getZ() + rand.nextFloat());
-            worldIn.spawnParticle(EnumParticleTypes.DRIP_WATER, d0, d1, d2, 0.0D, 0.0D, 0.0D, new int[0]);
-        }
-
-    }
-
-    public boolean canLightningStrike(World world,BlockPos pos)
-    {
-        if (!world.isRaining())
-        {
-            return false;
-        }
-        else if (!world.canSeeSky(pos))
-        {
-            return false;
-        }
-        else if (world.getPrecipitationHeight(pos).getY() > pos.getY())
-        {
-            return false;
-        }
-        else
-        {
-            Biome biomegenbase = world.getBiome(pos);
-            return biomegenbase.getEnableSnow() ? false : (this.canSnowAtBody(world,pos, false) ? false : biomegenbase.canRain());
-        }
-    }
-
-    public boolean canSnowAtBody(World w,BlockPos pos, boolean checkLight)
-    {
-        Biome biomegenbase = w.getBiome(pos);
-        float f = biomegenbase.getFloatTemperature(pos);
-
-        if (f > 0.15F)
-        {
-            return false;
-        }
-        else if (!checkLight)
-        {
-            return true;
-        }
-        else
-        {
-            if (pos.getY() >= 0 && pos.getY() < 256 && w.getLightFor(EnumSkyBlock.BLOCK, pos) < 10)
-            {
-                Block block = w.getBlockState(pos).getBlock();
-
-                if (block.isAir(w.getBlockState(pos),w, pos) && Blocks.SNOW_LAYER.canPlaceBlockAt(w, pos))
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-    }
-
     private void destroy(World worldIn, BlockPos pos)
     {
-        this.dropBlockAsItemWithChance(worldIn, pos, worldIn.getBlockState(pos), 100,0);
+        this.dropBlockAsItem(worldIn, pos, worldIn.getBlockState(pos), 0);
         worldIn.setBlockToAir(pos);
-    }
-
-    /**
-     * Returns the quantity of items to drop on block destruction.
-     */
-    public int quantityDropped(Random random)
-    {
-        return random.nextInt(20) == 0 ? 1 : 0;
-    }
-
-    /**
-     * Spawns this Block's drops into the World as EntityItems.
-     *
-     * @param chance The chance that each Item is actually spawned (1.0 = always, 0.0 = never)
-     * @param fortune The player's fortune level
-     */
-    public void dropBlockAsItemWithChance(World worldIn, BlockPos pos, IBlockState state, float chance, int fortune)
-    {
-        super.dropBlockAsItemWithChance(worldIn, pos, state, chance, fortune);
-    }
-
-    protected void dropApple(World worldIn, BlockPos pos, IBlockState state, int chance) {}
-
-    protected int getSaplingDropChance(IBlockState state)
-    {
-        return 20;
-    }
-
-    @SideOnly(Side.CLIENT)
-    public BlockRenderLayer getBlockLayer()
-    {
-        return BlockRenderLayer.CUTOUT;
-    }
-
-    public boolean isVisuallyOpaque()
-    {
-        return false;
-    }
-
-    @Override
-    public boolean isOpaqueCube(IBlockState state)
-    {
-        return false;
-    }
-
-    public abstract Enum getWoodType(int meta);
-
-    protected abstract boolean needMask();
-
-    @Override public boolean isShearable(ItemStack item, IBlockAccess world, BlockPos pos){ return true; }
-    public boolean isLeaves(IBlockAccess world, BlockPos pos){ return true; }
-
-    public void beginLeavesDecay(World world, BlockPos pos)
-    {
-        IBlockState state = world.getBlockState(pos);
-        if (!(Boolean)state.getValue(CHECK_DECAY))
-        {
-            world.setBlockState(pos, state.withProperty(CHECK_DECAY, true), 4);
-        }
-    }
-
-    @Override
-    public java.util.List<ItemStack> getDrops(IBlockAccess world, BlockPos pos, IBlockState state, int fortune)
-    {
-        java.util.List<ItemStack> ret = new java.util.ArrayList<ItemStack>();
-        Random rand = world instanceof World ? ((World)world).rand : new Random();
-        int chance = this.getSaplingDropChance(state);
-
-        if (fortune > 0)
-        {
-            chance -= 2 << fortune;
-            if (chance < 10) chance = 10;
-        }
-
-        if (rand.nextInt(chance) == 0)
-            ret.add(new ItemStack(getItemDropped(state, rand, fortune), 1, needMask()?damageDropped(state)+4:damageDropped(state)));
-
-        chance = 200;
-        if (fortune > 0)
-        {
-            chance -= 10 << fortune;
-            if (chance < 40) chance = 40;
-        }
-
-        this.captureDrops(true);
-        if (world instanceof World)
-            this.dropApple((World)world, pos, state, chance); // Dammet mojang
-        ret.addAll(this.captureDrops(false));
-        return ret;
-    }
-
-    public static String getRawUnlocalizedName(LeavesBlock leaves) {
-        String unwrapped=getUnwrappedUnlocalizedName(leaves.getUnlocalizedName());
-        return unwrapped.substring(unwrapped.indexOf(":")+1);
     }
 
     /*@SideOnly(Side.CLIENT)

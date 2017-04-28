@@ -20,4 +20,5 @@ public interface ITreeSpeciesLoader
 
     void loadWoodBlocks(TreeBlockFactory factory);
 
+    void loadDoorBlocks(TreeBlockFactory factory);
 }
