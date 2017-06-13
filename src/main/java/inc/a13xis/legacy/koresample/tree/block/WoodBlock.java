@@ -5,17 +5,14 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import inc.a13xis.legacy.koresample.tree.DefinesWood;
-import inc.a13xis.legacy.koresample.tree.item.WoodItem;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -33,12 +30,6 @@ public abstract class WoodBlock extends Block
         Preconditions.checkArgument(subBlocks.size() <= CAPACITY);
         this.subBlocks = ImmutableList.copyOf(subBlocks);
         this.setUnlocalizedName("planks");
-    }
-
-    @SuppressWarnings("WeakerAccess")
-    protected static String getUnwrappedUnlocalizedName(String unlocalizedName)
-    {
-        return unlocalizedName.substring(unlocalizedName.indexOf('.') + 1);
     }
 
     protected final List<DefinesWood> subBlocks() { return Collections.unmodifiableList(subBlocks); }
@@ -59,6 +50,11 @@ public abstract class WoodBlock extends Block
             ModelLoader.setCustomModelResourceLocation(blockItem,define.woodSubBlockVariant().ordinal(),typeLocation);
 
         }
+    }
+
+    protected static String getUnwrappedUnlocalizedName(String unlocalizedName)
+    {
+        return unlocalizedName.substring(unlocalizedName.indexOf('.') + 1);
     }
 
     @Override

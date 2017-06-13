@@ -103,7 +103,7 @@ public abstract class LeavesBlock extends BlockLeaves
     @Override
     public int damageDropped(IBlockState state)
     {
-        return subBlocks.get(mask(this.getMetaFromState(state))).saplingDefinition().saplingSubBlockVariant().ordinal();
+        return subBlocks.get(mask(this.getMetaFromState(state))).leavesSubBlockVariant().ordinal();
     }
 
     public final String[] getSpeciesNames() //func_150125_e
