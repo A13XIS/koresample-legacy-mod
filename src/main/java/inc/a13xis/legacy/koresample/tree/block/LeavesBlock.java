@@ -96,8 +96,9 @@ public abstract class LeavesBlock extends BlockLeaves
     @Override
     public int damageDropped(IBlockState state)
     {
-        return subBlocks.get(this.getMetaFromState(state)).saplingDefinition().saplingSubBlockVariant().ordinal();
+        return subBlocks.get(this.getMetaFromState(state)).leavesSubBlockVariant().ordinal();
     }
+
 
     public final String[] getSpeciesNames() //func_150125_e
     {
@@ -113,7 +114,7 @@ public abstract class LeavesBlock extends BlockLeaves
     }
 
     @Deprecated
-    public final int getDamageValue(World world, BlockPos pos) { return this.getMetaFromState(world.getBlockState(pos)) & 3; }
+    public final int getDamageValue(World world, BlockPos pos) { return this.getMetaFromState(world.getBlockState(pos)); }
 
     public final void getSubBlocks(Item item, CreativeTabs unused, List subBlocks)
     {
@@ -134,7 +135,12 @@ public abstract class LeavesBlock extends BlockLeaves
         }
     }
 
-    protected abstract String resourcePrefix();
+    @Override
+    public int getMetaFromState(IBlockState state){
+        return super.getMetaFromState(state.withProperty(DECAYABLE,true).withProperty(CHECK_DECAY,true));
+    }
+
+    public abstract String resourcePrefix();
 
     @Override
     public String toString()

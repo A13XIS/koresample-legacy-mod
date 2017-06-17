@@ -143,7 +143,10 @@ public abstract class SaplingBlock extends BlockBush implements IGrowable
     /**
      * Get the damage value that this Block should drop
      */
-    public abstract int damageDropped(IBlockState state);
+    @Override
+    public int damageDropped(IBlockState state) {
+        return getMetaFromState(state.withProperty(STAGE,0));
+    }
 
     /**
      * Whether this IGrowable can grow
