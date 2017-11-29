@@ -1,6 +1,7 @@
 package inc.a13xis.legacy.koresample.common.block;
 
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
+import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableList;
 import inc.a13xis.legacy.koresample.common.util.slab.TheSingleSlabRegistry;
 import inc.a13xis.legacy.koresample.tree.DefinesLog;
@@ -12,6 +13,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
@@ -87,19 +89,16 @@ public abstract class SlabBlock extends BlockSlab
 
     @SideOnly(Side.CLIENT)
     @Override
-    public final void getSubBlocks(Item item, CreativeTabs unused, NonNullList<ItemStack> subblocks)
+    public final void getSubBlocks(CreativeTabs unused, NonNullList<ItemStack> subblocks)
     {
-        if (isSingleSlab(item))
-        {
             for (int i = 0; i < subBlocks.size(); ++i)
             {
                 //noinspection ObjectAllocationInLoop
-                subblocks.add(new ItemStack(item, 1, i));
+                subblocks.add(new ItemStack(new ItemBlock(this), 1, i));
             }
-        }
     }
 
-    public void registerBlockModels()
+    public void registerItemModels()
     {
         for (DefinesSlab define : subBlocks())
         {
@@ -132,5 +131,5 @@ public abstract class SlabBlock extends BlockSlab
     protected final List<DefinesSlab> subBlocks() { return Collections.unmodifiableList(subBlocks); }
 
     @Override
-    public String toString() { return Objects.toStringHelper(this).add("subBlocks", subBlocks).toString(); }
+    public String toString() { return MoreObjects.toStringHelper(this).add("subBlocks", subBlocks).toString(); }
 }

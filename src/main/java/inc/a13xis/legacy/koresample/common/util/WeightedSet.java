@@ -1,6 +1,7 @@
 package inc.a13xis.legacy.koresample.common.util;
 
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
+import com.google.common.base.MoreObjects;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
 import java.util.Collection;
@@ -101,6 +102,6 @@ public class WeightedSet<T>  implements Collection<T>
     @Override
     public String toString()
     {
-        return Objects.toStringHelper(this).add("random", random).add("elements", elements).toString();
+        return MoreObjects.toStringHelper(this).add("random", random).add("elements", elements).toString();
     }
 }

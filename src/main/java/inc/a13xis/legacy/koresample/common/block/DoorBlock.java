@@ -55,8 +55,6 @@ public abstract class DoorBlock extends Block
         setHardness(3f);
         this.variant=model.doorModelSubBlockVariant();
         setUnlocalizedName("door."+variant.name().toLowerCase());
-        setRegistryName("door_"+variant.name().toLowerCase());
-        this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(OPEN, Boolean.valueOf(false)).withProperty(HINGE, BlockDoor.EnumHingePosition.LEFT).withProperty(POWERED, Boolean.valueOf(false)).withProperty(HALF, BlockDoor.EnumDoorHalf.LOWER));
     }
 
     @SuppressWarnings("WeakerAccess")
@@ -125,9 +123,10 @@ public abstract class DoorBlock extends Block
     /**
      * Get the MapColor for this Block and the given BlockState
      */
-    public MapColor getMapColor(IBlockState state)
+    @Override
+    public MapColor getMapColor(IBlockState state, IBlockAccess worldIn, BlockPos pos)
     {
-        return state.getBlock() == Blocks.IRON_DOOR ? MapColor.IRON : (state.getBlock() == Blocks.OAK_DOOR ? BlockPlanks.EnumType.OAK.getMapColor() : (state.getBlock() == Blocks.SPRUCE_DOOR ? BlockPlanks.EnumType.SPRUCE.getMapColor() : (state.getBlock() == Blocks.BIRCH_DOOR ? BlockPlanks.EnumType.BIRCH.getMapColor() : (state.getBlock() == Blocks.JUNGLE_DOOR ? BlockPlanks.EnumType.JUNGLE.getMapColor() : (state.getBlock() == Blocks.ACACIA_DOOR ? BlockPlanks.EnumType.ACACIA.getMapColor() : (state.getBlock() == Blocks.DARK_OAK_DOOR ? BlockPlanks.EnumType.DARK_OAK.getMapColor() : super.getMapColor(state)))))));
+        return state.getBlock() == Blocks.IRON_DOOR ? MapColor.IRON : (state.getBlock() == Blocks.OAK_DOOR ? BlockPlanks.EnumType.OAK.getMapColor() : (state.getBlock() == Blocks.SPRUCE_DOOR ? BlockPlanks.EnumType.SPRUCE.getMapColor() : (state.getBlock() == Blocks.BIRCH_DOOR ? BlockPlanks.EnumType.BIRCH.getMapColor() : (state.getBlock() == Blocks.JUNGLE_DOOR ? BlockPlanks.EnumType.JUNGLE.getMapColor() : (state.getBlock() == Blocks.ACACIA_DOOR ? BlockPlanks.EnumType.ACACIA.getMapColor() : (state.getBlock() == Blocks.DARK_OAK_DOOR ? BlockPlanks.EnumType.DARK_OAK.getMapColor() : super.getMapColor(state,worldIn,pos)))))));
     }
 
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
@@ -207,7 +206,7 @@ public abstract class DoorBlock extends Block
                 flag1 = true;
             }
 
-            if (!worldIn.getBlockState(pos.down()).isFullyOpaque())
+            if (!worldIn.getBlockState(pos.down()).isOpaqueCube())
             {
                 worldIn.setBlockToAir(pos);
                 flag1 = true;
@@ -361,7 +360,7 @@ public abstract class DoorBlock extends Block
         return state.withRotation(mirrorIn.toRotation((EnumFacing)state.getValue(FACING)));
     }
 
-    public void registerBlockModel()
+    public void registerItemModels()
     {
         Item blockItem = Item.getItemFromBlock(this);
         ModelResourceLocation typeItemLocation = new ModelResourceLocation(new ResourceLocation("dendrology","door_"+variant.name().toLowerCase()+"_item"),"inventory");
@@ -438,11 +437,6 @@ public abstract class DoorBlock extends Block
     protected static boolean isTop(int meta)
     {
         return (meta & 8) != 0;
-    }
-
-    protected BlockStateContainer createBlockState()
-    {
-        return new BlockStateContainer(this, new IProperty[] {HALF, FACING, OPEN, HINGE, POWERED});
     }
 
     public static enum EnumDoorHalf implements IStringSerializable

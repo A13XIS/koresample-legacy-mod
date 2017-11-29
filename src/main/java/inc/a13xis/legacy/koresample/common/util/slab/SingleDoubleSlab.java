@@ -1,6 +1,7 @@
 package inc.a13xis.legacy.koresample.common.util.slab;
 
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
+import com.google.common.base.MoreObjects;
 import inc.a13xis.legacy.koresample.common.block.SlabBlock;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
@@ -26,6 +27,6 @@ public final class SingleDoubleSlab
     @Override
     public String toString()
     {
-        return Objects.toStringHelper(this).add("pair", pair).toString();
+        return MoreObjects.toStringHelper(this).add("pair", pair).toString();
     }
 }

@@ -1,18 +1,17 @@
 package inc.a13xis.legacy.koresample.tree.block;
 
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import inc.a13xis.legacy.koresample.tree.DefinesLeaves;
 import inc.a13xis.legacy.koresample.tree.DefinesLog;
 import net.minecraft.block.BlockLog;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -59,14 +58,14 @@ public abstract class LogBlock extends BlockLog
 
     @SideOnly(Side.CLIENT)
     @Override
-    public final void getSubBlocks(Item item, CreativeTabs unused, NonNullList<ItemStack> subblocks)
+    public void getSubBlocks(CreativeTabs unused, NonNullList<ItemStack> items)
     {
         for (int i = 0; i < subBlocks.size(); i++)
-            //noinspection ObjectAllocationInLoop
-            subblocks.add(new ItemStack(item, 1, i));
+            items.add(new ItemStack(new ItemBlock(this), 1, i));
     }
 
-    public void registerBlockModels()
+    @SideOnly(Side.CLIENT)
+    public void registerItemModels()
     {
         for (DefinesLog define : subBlocks())
         {
@@ -82,6 +81,6 @@ public abstract class LogBlock extends BlockLog
     @Override
     public String toString()
     {
-        return Objects.toStringHelper(this).add("subBlocks", subBlocks).toString();
+        return MoreObjects.toStringHelper(this).add("subBlocks", subBlocks).toString();
     }
 }

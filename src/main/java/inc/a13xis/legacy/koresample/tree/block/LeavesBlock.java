@@ -1,6 +1,7 @@
 package inc.a13xis.legacy.koresample.tree.block;
 
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
+import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import inc.a13xis.legacy.koresample.tree.DefinesLeaves;
@@ -129,7 +130,7 @@ public abstract class LeavesBlock extends BlockLeaves
             subBlocks.add(new ItemStack(item, 1, i));
     }
 
-    public void registerBlockModels()
+    public void registerItemModels()
     {
         for (DefinesLeaves define : subBlocks())
         {
@@ -145,7 +146,7 @@ public abstract class LeavesBlock extends BlockLeaves
     @Override
     public String toString()
     {
-        return Objects.toStringHelper(this).add("subBlocks", subBlocks).toString();
+        return MoreObjects.toStringHelper(this).add("subBlocks", subBlocks).toString();
     }
 
     public abstract BlockPlanks.EnumType getWoodType(int meta);

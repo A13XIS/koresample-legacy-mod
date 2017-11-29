@@ -1,6 +1,6 @@
 package inc.a13xis.legacy.koresample.common.util.log;
 
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 
@@ -37,6 +37,6 @@ public final class Logger
     @Override
     public String toString()
     {
-        return Objects.toStringHelper(this).add("logger", logger).toString();
+        return MoreObjects.toStringHelper(this).add("logger", logger).toString();
     }
 }

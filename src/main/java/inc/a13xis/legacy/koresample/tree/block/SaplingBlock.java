@@ -1,6 +1,7 @@
 package inc.a13xis.legacy.koresample.tree.block;
 
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
+import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import inc.a13xis.legacy.koresample.tree.DefinesLog;
@@ -13,6 +14,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
@@ -78,14 +80,14 @@ public abstract class SaplingBlock extends BlockBush implements IGrowable
 
     @SideOnly(Side.CLIENT)
     @Override
-    public final void getSubBlocks(Item item, CreativeTabs unused, NonNullList<ItemStack> subBlocks)
+    public final void getSubBlocks(CreativeTabs unused, NonNullList<ItemStack> subBlocks)
     {
         for (int i = 0; i < this.subBlocks.size(); i++)
             //noinspection ObjectAllocationInLoop
-            subBlocks.add(new ItemStack(item, 1, i));
+            subBlocks.add(new ItemStack(new ItemBlock(this), 1, i));
     }
 
-    public void registerBlockModels()
+    public void registerItemModels()
     {
         for (DefinesSapling define : subBlocks())
         {
@@ -106,7 +108,7 @@ public abstract class SaplingBlock extends BlockBush implements IGrowable
     @Override
     public String toString()
     {
-        return Objects.toStringHelper(this).add("subBlocks", subBlocks).toString();
+        return MoreObjects.toStringHelper(this).add("subBlocks", subBlocks).toString();
     }
 
     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand)

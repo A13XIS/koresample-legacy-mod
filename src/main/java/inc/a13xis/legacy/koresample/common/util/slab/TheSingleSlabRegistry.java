@@ -1,6 +1,7 @@
 package inc.a13xis.legacy.koresample.common.util.slab;
 
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
+import com.google.common.base.MoreObjects;
 import com.google.common.collect.Sets;
 import inc.a13xis.legacy.koresample.common.block.SlabBlock;
 import net.minecraft.block.Block;
@@ -25,6 +26,6 @@ public enum TheSingleSlabRegistry
     @Override
     public String toString()
     {
-        return Objects.toStringHelper(this).add("slabBlocks", slabBlocks).toString();
+        return MoreObjects.toStringHelper(this).add("slabBlocks", slabBlocks).toString();
     }
 }

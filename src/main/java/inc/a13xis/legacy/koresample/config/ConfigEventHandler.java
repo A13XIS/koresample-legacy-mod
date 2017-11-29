@@ -1,6 +1,7 @@
 package inc.a13xis.legacy.koresample.config;
 
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Optional;
 import inc.a13xis.legacy.koresample.common.util.log.Logger;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent.OnConfigChangedEvent;
@@ -147,7 +148,7 @@ public final class ConfigEventHandler
     @Override
     public String toString()
     {
-        return Objects.toStringHelper(this).add("configFile", configFile).add("sync", sync)
+        return MoreObjects.toStringHelper(this).add("configFile", configFile).add("sync", sync)
                 .add("configuration", configuration).add("configVersion", configVersion).add("modID", modID)
                 .add("logger", logger).toString();
     }

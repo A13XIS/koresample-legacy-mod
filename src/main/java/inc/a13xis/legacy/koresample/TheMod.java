@@ -8,7 +8,7 @@ public final class TheMod
 {
     public static final String MOD_ID = "koresample";
     public static final String MOD_NAME = "Kore Sample";
-    public static final String MOD_VERSION = "1.11.2-L1.3";
+    public static final String MOD_VERSION = "1.12-L1";
     private static final String RESOURCE_PREFIX = MOD_ID.toLowerCase() + ':';
 
     @Instance(MOD_ID)
